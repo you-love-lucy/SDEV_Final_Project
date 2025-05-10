@@ -2,18 +2,14 @@
 
 Name: Lucy Jones
 Project: Reservation Records
-Function: Record hotel reservation and payment info
-Notes: Faced some issues with opening a new window and input validation.
-Add/Fix:
-- Test the application
-- Write a manual.
+Function: Record hotel reservation and payment info.
 
 """
 
 # import neccesary modules
 from breezypythongui import EasyFrame
 from tkinter import PhotoImage
-resLog = open("reservationRecordLogs.txt.", "w")
+resLog = open("reservationRecordLogs.txt.", "a")
 
 # make a class for the reservation information window
 class ReservationWindow(EasyFrame):
@@ -43,6 +39,7 @@ class ReservationWindow(EasyFrame):
         self.addLabel(text = "Phone number: ", row = 4, column = 0)
         self.phoneNum = self.addIntegerField(0, row = 4, column = 1)
         # payment type
+        self.addLabel(text = "Payment type: ", row = 5, column = 0)
         self.payType = self.addRadiobuttonGroup(row = 5, column = 1)
         self.payType.addRadiobutton(text = "Cash")
         self.payType.addRadiobutton(text = "Card")
@@ -62,15 +59,19 @@ class ReservationWindow(EasyFrame):
         self.price = 0
         self.priceNum = self.addLabel(text = self.price, row = 5, column = 3)
         # room number
-        self.addLabel(text = "Room number: ", row = 6, column = 0)
-        self.roomNum = self.addRadiobuttonGroup(row = 6, column = 1)
+        self.addLabel(text = "Room number: ", row = 7, column = 0)
+        self.roomNum = self.addRadiobuttonGroup(row = 7, column = 1)
         self.roomNum.addRadiobutton(text = "101")
         self.roomNum.addRadiobutton(text = "102")
         self.roomNum.addRadiobutton(text = "103")
         self.roomNum.addRadiobutton(text = "104")
+        self.roomNum.addRadiobutton(text = "105")
+        self.roomNum.addRadiobutton(text = "106")
+        self.roomNum.addRadiobutton(text = "107")
+        self.roomNum.addRadiobutton(text = "108")
         # save and open folio buttons
         self.addButton(text = "Save", row = 6, column = 3, command = self.saveReservation)
-        self.addButton(text = "Open Folio", row = 7, column = 1, columnspan = 2, command = self.openFolio)
+        self.addButton(text = "Open Folio", row = 8, column = 1, columnspan = 2, command = self.openFolio)
         
     def openFolio(self):
         # open folio window
@@ -78,26 +79,52 @@ class ReservationWindow(EasyFrame):
 
     def calculatePrice(self):
         # calculate the price
-        try:
-            rate = self.rate.getNumber()
-            nightNum = self.nightNum.getNumber()
-            self.price = rate*nightNum
-            self.priceNum["text"] = self.price
-        except ValueError:
+        rate = self.rate.getNumber()
+        nightNum = self.nightNum.getNumber()
+        if rate >= 1 and nightNum >= 1:
+            try:
+                self.price = rate*nightNum
+                self.priceNum["text"] = self.price
+            except ValueError:
+                self.messageBox(title = "Error", message = "Error in entered data.")
+        else:
             self.messageBox(title = "Error", message = "Error in entered data.")
             
     def saveReservation(self):
         # save the reservation information to the file
         try:
+            # get last name and make sure it isn't blank
             lName = self.lName.getText()
+            if lName == "":
+                self.messageBox(title = "Error", message = "No last name entered.")
+            # get first name and make sure it isn't blank
             fName = self.fName.getText()
+            if fName == "":
+                self.messageBox(title = "Error", message = "No first name entered.")
+            # get address and make sure it isn't blank
             address = self.address.getText()
+            if address == "":
+                self.messageBox(title = "Error", message = "No address entered.")
+            # get phone number
             phoneNum = str(self.phoneNum.getNumber())
+            # get payment type
             payType = self.payType.getSelectedButton()["text"]
+            # get check-in date and make sure it isn't blank
             inDate = self.inDate.getText()
-            nightNum = str(self.nightNum.getNumber())
+            if inDate == "":
+                self.messageBox(title = "Error", message = "No check-in date entered.")
+            # make sure price has been calculated
+            if self.price > 0:
+                # get number of nights
+                nightNum = str(self.nightNum.getNumber())
+                # get rate
+                rate = str(self.rate.getNumber())
+            else:
+                self.messageBox(title = "Error", message = "Calculate price before saving.")
+            # get room number
             roomNum = self.roomNum.getSelectedButton()["text"]
-            resLog.write(lName + ", " + fName + " | " + address + " | " + payType + " | Check-in: " + inDate + " | " + nightNum + " | " + roomNum)
+            # write information to file
+            resLog.write(lName + ", " + fName + " | " + address + " | " + payType + " | Check-in: " + inDate + " | " + nightNum + " | " + rate + " | " + "Total: " + str(self.price) + " | " + roomNum)
             resLog.close()
         except ValueError:
             self.messageBox(title = "Error", message = "Error in entered data.")
@@ -141,7 +168,6 @@ class FolioWindow(EasyFrame):
                 currentBalance = currentBalance - payment
                 self.curBalance["text"] = currentBalance
                 self.balance = currentBalance
-                print(self.balance)
             except ValueError:
                 self.messageBox(title = "Error", message = "Error in entered data.")
         else:
