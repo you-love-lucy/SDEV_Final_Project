@@ -1,0 +1,20 @@
+Reservation Records Manual
+Author: Lucy Jones
+
+New Reservations:
+To add a new reservation in the "New Reservation" window, first fill out the guest information under Last Name, First Name, and Address.
+Next, enter the Phone Number for the guest. Choose the Payment Type for the guest, and then assign a room.
+Add the check-in date. Enter the amount of nights and the rate for the reservation, and then click "Get Price" to calculate the price.
+To save the reservation to the Reservation Log file, hit save. The record will be saved in a text file called "reservationRecordLogs.txt" for reference.
+
+Folio:
+To add payments and calculate the new balance, hit "Open Folio" and the folio will open.
+The price should have carried over from the Reservation window. To add a payment, enter it in the input box and then hit "Add payment"  to add it.
+The payment should be added to the text area and subtracted from the remaining balance.
+
+Errors:
+"Error in entered data":
+This means that the wrong type of data was entered into an input field. Check your data to make sure all fields that should be numerical are so.
+
+"Payment exceeds current balance": 
+The payment you entered is greater than the remaining balance. The error window will show the maximum payment.
