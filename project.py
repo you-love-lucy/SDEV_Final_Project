@@ -3,58 +3,150 @@
 Name: Lucy Jones
 Project: Reservation Records
 Function: Record hotel reservation and payment info
-Notes: So far I have the user-facing windows made. I need to create the logic behind them next, including a module to write the entered information to a text file.
-I will also need to create a module to add new payments and calculate the new balance. I faced a few problems with the "Open Folio" button, but I worked it out.
-I also need to add input validation and images. After that I need to test the application, write a manual, and add comments.
+Notes: Faced some issues with opening a new window and input validation.
+Add/Fix:
+- Test the application
+- Write a manual.
 
 """
 
+# import neccesary modules
 from breezypythongui import EasyFrame
+from tkinter import PhotoImage
+resLog = open("reservationRecordLogs.txt.", "w")
 
+# make a class for the reservation information window
 class ReservationWindow(EasyFrame):
+    
     def __init__(self):
+        # title
         EasyFrame.__init__(self, title = "New Reservation")
+        # logo image
+        try:
+            label = self.addLabel(text = "", row = 0, column = 3) 
+            self.logoImage = PhotoImage(file = "logo.gif")
+            label["image"] = self.logoImage
+        except Exception:
+            label = self.addLabel(text = "Hotel Logo", row = 0, column = 3)
+        # heading
         self.addLabel(text = "Enter guest information: ", row = 0, column = 0, columnspan = 2)
+        # last name
         self.addLabel(text = "Last name: ", row = 1, column = 0)
-        self.addTextField(text = "", row = 1, column = 1)
+        self.lName = self.addTextField(text = "", row = 1, column = 1)
+        # first name
         self.addLabel(text = "First name: ", row = 2, column = 0)
-        self.addTextField(text = "", row = 2, column = 1)
+        self.fName = self.addTextField(text = "", row = 2, column = 1)
+        # address
         self.addLabel(text = "Address: ", row = 3, column = 0)
-        self.addTextField(text = "", row = 3, column = 1)
+        self.address = self.addTextField(text = "", row = 3, column = 1)
+        # phone number
         self.addLabel(text = "Phone number: ", row = 4, column = 0)
-        self.addTextField(text = "", row = 4, column = 1)
-        self.addLabel(text = "Payment type: ", row = 5, column = 0)
-        self.addTextField(text = "", row = 5, column = 1)
+        self.phoneNum = self.addIntegerField(0, row = 4, column = 1)
+        # payment type
+        self.payType = self.addRadiobuttonGroup(row = 5, column = 1)
+        self.payType.addRadiobutton(text = "Cash")
+        self.payType.addRadiobutton(text = "Card")
+        self.payType.addRadiobutton(text = "Check")
+        # check-in date
         self.addLabel(text = "Check-in date: ", row = 1, column = 2)
-        self.addTextField(text = "", row = 1, column = 3)
+        self.inDate = self.addTextField(text = "", row = 1, column = 3)
+        # nights
         self.addLabel(text = "Nights:  ", row = 2, column = 2)
         self.nightNum = self.addIntegerField(0, row = 2, column = 3)
+        # rate
         self.addLabel(text = "Rate: ", row = 3, column = 2)
         self.rate = self.addIntegerField(0, row = 3, column = 3)
-        self.addButton(text = "Get price", row = 4, column = 2, columnspan = 2)
+        # price calculations
+        self.addButton(text = "Get price", row = 4, column = 2, columnspan = 2, command = self.calculatePrice)
         self.addLabel(text = "Price: ", row = 5, column = 2)
         self.price = 0
-        self.addLabel(text = self.price, row = 5, column = 3)
-        self.addLabel(text = "Room number: ", row = 6, column = 1)
-        self.addTextField(text = "", row = 6, column = 2)
+        self.priceNum = self.addLabel(text = self.price, row = 5, column = 3)
+        # room number
+        self.addLabel(text = "Room number: ", row = 6, column = 0)
+        self.roomNum = self.addRadiobuttonGroup(row = 6, column = 1)
+        self.roomNum.addRadiobutton(text = "101")
+        self.roomNum.addRadiobutton(text = "102")
+        self.roomNum.addRadiobutton(text = "103")
+        self.roomNum.addRadiobutton(text = "104")
+        # save and open folio buttons
+        self.addButton(text = "Save", row = 6, column = 3, command = self.saveReservation)
         self.addButton(text = "Open Folio", row = 7, column = 1, columnspan = 2, command = self.openFolio)
+        
     def openFolio(self):
+        # open folio window
         FolioWindow(self.price).mainloop()
 
-class FolioWindow(EasyFrame):
-    def __init__(self, price):
-        EasyFrame.__init__(self, title = "Folio")
-        self.addLabel(text = "Total price due: ", row = 0, column = 0)
-        self.addLabel(text = price, row = 0, column = 1)
-        self.addLabel(text = "Add payment: ", row = 1, column = 0)
-        self.addIntegerField(0, row = 1, column = 1)
-        self.addLabel(text = "Payments: ", row = 2, column = 0)
-        self.addTextArea("", row = 3, column = 0, columnspan = 2, width = 50, height = 10)
-        paymentsTotal = 0
-        balance = price - paymentsTotal
-        self.addLabel(text = "Remaining balance: ", row = 4, column = 0)
-        self.addLabel(text = balance, row = 4, column = 1)
+    def calculatePrice(self):
+        # calculate the price
+        try:
+            rate = self.rate.getNumber()
+            nightNum = self.nightNum.getNumber()
+            self.price = rate*nightNum
+            self.priceNum["text"] = self.price
+        except ValueError:
+            self.messageBox(title = "Error", message = "Error in entered data.")
+            
+    def saveReservation(self):
+        # save the reservation information to the file
+        try:
+            lName = self.lName.getText()
+            fName = self.fName.getText()
+            address = self.address.getText()
+            phoneNum = str(self.phoneNum.getNumber())
+            payType = self.payType.getSelectedButton()["text"]
+            inDate = self.inDate.getText()
+            nightNum = str(self.nightNum.getNumber())
+            roomNum = self.roomNum.getSelectedButton()["text"]
+            resLog.write(lName + ", " + fName + " | " + address + " | " + payType + " | Check-in: " + inDate + " | " + nightNum + " | " + roomNum)
+            resLog.close()
+        except ValueError:
+            self.messageBox(title = "Error", message = "Error in entered data.")
     
+class FolioWindow(EasyFrame):
+
+    def __init__(self, price):
+        self.result = []
+        # title
+        EasyFrame.__init__(self, title = "Folio")
+        # folio image
+        try:
+            label = self.addLabel(text = "", row = 0, column = 3)
+            self.folioImage = PhotoImage(file = "folio.gif")
+            label["image"] = self.folioImage
+        except Exception:
+            label = self.addLabel(text = "Bill Image", row = 0, column = 3)
+        # price
+        self.price = price
+        self.addLabel(text = "Total price due: ", row = 1, column = 0)
+        self.addLabel(text = price, row = 1, column = 1)
+        # payment log and payment log additions
+        self.payment = self.addIntegerField(0, row = 2, column = 0)
+        self.addButton(text = "Add payment", row = 2, column = 1, command = self.calculate)
+        self.addLabel(text = "Payments: ", row = 3, column = 0)
+        self.payments = self.addTextArea("", row = 4, column = 0, columnspan = 2, width = 50, height = 8)
+        # balance
+        self.balance = price
+        self.addLabel(text = "Remaining balance: ", row = 5, column = 0)
+        self.curBalance = self.addLabel(text = self.balance, row = 5, column = 1)
+
+    def calculate(self):
+        # calculate the new balance
+        if self.payment.getNumber() <= self.balance:
+            try:
+                payment = self.payment.getNumber()
+                currentBalance = self.balance
+                self.result.append(payment)
+                self.paymentText = "\n".join(str(payment) for payment in self.result)
+                self.payments.setText(self.paymentText)
+                currentBalance = currentBalance - payment
+                self.curBalance["text"] = currentBalance
+                self.balance = currentBalance
+                print(self.balance)
+            except ValueError:
+                self.messageBox(title = "Error", message = "Error in entered data.")
+        else:
+            self.messageBox(title = "Error", message = "Payment exceeds current balance. Maximum payment: " + str(self.balance))
+
 def main():
     ReservationWindow().mainloop()
 
