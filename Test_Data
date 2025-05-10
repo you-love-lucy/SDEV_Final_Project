@@ -1,0 +1,71 @@
+Excepted Valid Test Data:
+John Smith
+123 Maple Street
+3175551234
+Card
+Check in: 06/15/2025
+3 Nights
+120/Night
+Room 101
+
+Payments of 100 & 260
+
+Notes: Worked as expected
+
+Expected Invalid Data:
+Name blank
+Address blank
+315phonenumber
+No payment type selected
+Check in: blank
+-2 Nights
+-10/Night
+Room blank
+
+Notes: Got an error, decided to go through with one invalid entry by another to see what needed error handling added.
+
+First Name blank
+Last Name Smith
+123 Maple Street
+3175551234
+Card
+Check in: 06/15/2025
+3 Nights
+120/Night
+Room 101
+
+Notes: Did not get an error, added error handling to first name field and other text input fields.
+Tested with no values for last name, first name, address, and check-in date, and errors popped up properly.
+
+John Smith
+123 Maple Street
+315phonenumber
+Card
+Check in: 06/15/2025
+3 Nights
+120/Night
+Room 101
+
+Notes: got error as expected.
+
+John Smith
+123 Maple Street
+3175551234
+No payment type selected
+Check in: 06/15/2025
+3 Nights
+120/Night
+Room 101
+
+Notes: got error as expected, same for no room selected.
+
+John Smith
+123 Maple Street
+3175551234
+Card
+Check in: 06/15/2025
+-2 Nights
+120/Night
+Room 101
+
+Notes: did not get an error, added error handling for number of nights and rate being zero or negative.
