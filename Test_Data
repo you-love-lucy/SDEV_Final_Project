@@ -68,4 +68,4 @@ Check in: 06/15/2025
 120/Night
 Room 101
 
-Notes: did not get an error, added error handling for number of nights and rate being zero or negative.
+Notes: did not get an error, added error handling for number of nights and rate being zero or negative, along with error handling for price not being calculated.
