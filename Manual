@@ -14,7 +14,7 @@ The payment should be added to the text area and subtracted from the remaining b
 
 Errors:
 "Error in entered data":
-This means that the wrong type of data was entered into an input field. Check your data to make sure all fields that should be numerical are so.
+This means that the wrong type of data was entered into an input field. Check your data to make sure all fields that should be numerical are numerical and greater than 1.
 
 "Payment exceeds current balance": 
 The payment you entered is greater than the remaining balance. The error window will show the maximum payment.
